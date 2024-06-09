@@ -8,6 +8,7 @@ let iframe = document.getElementById('mapsIframe');
 let apiKeyFld = document.getElementById('apiKey');
 
 let geolocationHandlerID = 0;
+let cachedCoordinates = null;
 
 /**
  * 
@@ -57,7 +58,7 @@ const pushData = async (urlEndpoint, geoLocationCoords) => {
             method: 'POST'
         };
 
-        try {           
+        try {
             const resp = await fetch(urlEndpoint, fetchOptions)
                 .catch((err) => {
                     console.error(`fetch(${urlEndpoint})`, err);
@@ -95,10 +96,15 @@ document.querySelector('#startBtn')
         geolocationHandlerID = navigator.geolocation.watchPosition((position) => {
 
             //log the data so for debugging purposes
+            cachedCoordinates = position.coords;
             console.info('received position.coords', position);
 
-            //load the google map
-            iframe.src = getMapsSource(position.coords.latitude, position.coords.longitude, apiKeyFld.value);
+            //load the google map if coords have changed
+
+            if ((cachedCoordinates?.latitude != position.coords.latitude || cachedCoordinates?.longitude != position.coords.longitude)
+                ||  (!iframe.src||'').toString().startsWith('https://www.google.com/maps/embed') == false) {
+                iframe.src = getMapsSource(position.coords.latitude, position.coords.longitude, apiKeyFld.value);
+            }
 
             //push data to server
             pushData(serviceUrl, position.coords);
