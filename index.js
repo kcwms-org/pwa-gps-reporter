@@ -3,24 +3,45 @@ if ("geolocation" in navigator) {
 } else {
     console.info('geolocation is not found')
 }
-let urlField = document.querySelector('#serverUrl');
-let refreshRateField = document.querySelector('#refreshRateI');
+let urlField = document.getElementById('serverUrl');
 let iframe = document.getElementById('mapsIframe');
-let apiKeyFld = document.querySelector('#apiKey');
+let apiKeyFld = document.getElementById('apiKey');
 
+let geolocationHandlerID = 0;
+
+/**
+ * 
+ * @param {number} latitude 
+ * @param {number} longitude 
+ * @param {string} apiKey 
+ * @returns 
+ */
 const getMapsSource = (latitude, longitude, apiKey) => `https://www.google.com/maps/embed/v1/place?q=%20${latitude}%2C${longitude}&key=${apiKey}`;
 
-const flattenObj = (object) => {
-    if (object) {
-        let flatObject = {};
-        for (pName in object) {
-            flatObject[pName] = object[pName];
+
+/**
+ * since JSON.stringify() will ignore non-OwnProperties, 
+ *  return a new object with all the properties of the input objects * 
+ * @param {object} inputObj 
+ * @returns 
+ */
+const flattenObj = (inputObj) => {
+    let flatObject = {};
+    if (inputObj) {
+        for (pName in inputObj) {
+            if (typeof inputObj[pName] != 'function') {
+                flatObject[pName] = inputObj[pName];
+            }
         };
-        return flatObject;
     }
-    return null;
+    return flatObject;
 }
 
+/**
+ * push the GPS coordinates to the remote server
+ * @param {string} urlEndpoint 
+ * @param {GeolocationCoordinates} geoLocationCoords 
+ */
 const pushData = async (urlEndpoint, geoLocationCoords) => {
     if (geoLocationCoords?.latitude && geoLocationCoords.longitude) {
 
@@ -36,15 +57,14 @@ const pushData = async (urlEndpoint, geoLocationCoords) => {
             method: 'POST'
         };
 
-        try {
+        try {           
             const resp = await fetch(urlEndpoint, fetchOptions)
                 .catch((err) => {
-                    alert(`error: ${err}`);
-                })
-            if (!resp?.ok) {
-                const err = `Status Code ${resp.status}: ${resp.statusText}`;
-                console.err(err);
-                alert(err);
+                    console.error(`fetch(${urlEndpoint})`, err);
+                });
+
+            if (resp?.ok) {
+                console.info(`fetch(${urlEndpoint})`, resp);
             }
         }
         catch (err) {
@@ -62,23 +82,35 @@ const pushData = async (urlEndpoint, geoLocationCoords) => {
     }
 }
 
-
-const startBtn = document.querySelector('#form > div:nth-child(2) > div > button:nth-child(2)')
+/**
+ * start collecting GPS data and publish it to the server
+ */
+document.querySelector('#startBtn')
     .addEventListener("click", () => {
 
+        //get the latest service url: not likely but it may have changed
         let serviceUrl = urlField.value;
-        let refreshRate = refreshRateField.value;
 
-        navigator.geolocation.getCurrentPosition((position) => {
+        //request that the device notify us everytime the GPS coordinates change
+        geolocationHandlerID = navigator.geolocation.watchPosition((position) => {
+
+            //log the data so for debugging purposes
             console.info('received position.coords', position);
-            console.info(`posting to ${serviceUrl}`);
 
-            alert(`your gps position is ${position.coords.longitude},${position.coords.latitude}`);
-
+            //load the google map
             iframe.src = getMapsSource(position.coords.latitude, position.coords.longitude, apiKeyFld.value);
 
+            //push data to server
             pushData(serviceUrl, position.coords);
+
         });
 
+    });
+/**
+ * stop collection gps data
+ */
+document.querySelector('#stopBtn')
+    .addEventListener('click', () => {
+        navigator.geolocation.clearWatch(geolocationHandlerID);
     });
 
