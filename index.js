@@ -3,9 +3,12 @@ if ("geolocation" in navigator) {
 } else {
     console.info('geolocation is not found')
 }
-
 let urlField = document.querySelector('#serverUrl');
 let refreshRateField = document.querySelector('#refreshRateI');
+let iframe = document.getElementById('mapsIframe');
+let apiKeyFld = document.querySelector('#apiKey');
+
+const getMapsSource = (latitude, longitude, apiKey) => `https://www.google.com/maps/embed/v1/place?q=%20${latitude}%2C${longitude}&key=${apiKey}`;
 
 const flattenObj = (object) => {
     if (object) {
@@ -63,13 +66,16 @@ const pushData = async (urlEndpoint, geoLocationCoords) => {
 const startBtn = document.querySelector('#form > div:nth-child(2) > div > button:nth-child(2)')
     .addEventListener("click", () => {
 
-
         let serviceUrl = urlField.value;
         let refreshRate = refreshRateField.value;
 
         navigator.geolocation.getCurrentPosition((position) => {
             console.info('received position.coords', position);
             console.info(`posting to ${serviceUrl}`);
+
+            alert(`your gps position is ${position.coords.longitude},${position.coords.latitude}`);
+
+            iframe.src = getMapsSource(position.coords.latitude, position.coords.longitude, apiKeyFld.value);
 
             pushData(serviceUrl, position.coords);
         });

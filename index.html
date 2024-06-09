@@ -10,6 +10,10 @@
 <body>
     <form name="form" id="form" action="http://tbd.com" method="post">
         <div class="data-input">
+            <div class="input-fields">
+                <label for="apiKey">API Key &nbsp;
+                    <input type="text" name="apiKey" id="apiKey" placeholder="paste google api key here"></label>
+            </div>
             <div class="user-input first">
                 <label for="serverUrl">Server URL&nbsp;
                     <input type="url" name="serverUrl" id="serverUrl" value="https://someremoteserver/locationendpoint">
@@ -28,6 +32,11 @@
             </div>
         </div>
     </form>
+    <div>
+        <iframe id="mapsIframe" width="100%" height="90%" style="border:0" loading="lazy" allowfullscreen
+            src=""></iframe>
+    </div>
 </body>
 <script src="./index.js"></script>
+
 </html>
