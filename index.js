@@ -34,10 +34,21 @@ const pushData = async (urlEndpoint, geoLocationCoords) => {
         };
 
         try {
-            await fetch(urlEndpoint, fetchOptions);
+            const resp = await fetch(urlEndpoint, fetchOptions)
+                .catch((err) => {
+                    alert(`error: ${err}`);
+                })
+            if (!resp?.ok) {
+                const err = `Status Code ${resp.status}: ${resp.statusText}`;
+                console.err(err);
+                alert(err);
+            }
         }
         catch (err) {
-            console.error(`POST ${urlEndpoint}`)
+            const errMsg = `POST ${urlEndpoint} failed with ${err}`;
+            console.error(errMsg);
+
+            alert(errMsg);
         }
 
     }
