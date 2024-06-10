@@ -11,15 +11,21 @@
     <form name="form" id="form" action="http://tbd.com" method="post">
         <div class="data-input">
             <div class="input-fields">
+                <label for="senderName">Unique ID &nbsp;
+                    <input type="text" id="senderName" name="senderName" placeholder="a unique name"></label>
+            </div>
+            <div class="input-fields">
+                <label for="serverUrl">Server URL&nbsp;
+                    <input type="url" name="serverUrl" id="serverUrl"
+                        value="https://script.google.com/macros/s/AKfycbwnQV5xmfdTtHW3x0xAIZRtv-ncBcNLB5kaMaFckUXCkW_DXXnxabPh86-tixyMZwfxPw/exec">
+                </label>
+            </div>
+            <div class="input-fields">
+
                 <label for="apiKey">API Key &nbsp;
                     <input type="text" name="apiKey" id="apiKey" placeholder="paste google api key here"></label>
             </div>
-            <div class="user-input first">
-                <label for="serverUrl">Server URL&nbsp;
-                    <input type="url" name="serverUrl" id="serverUrl" value="https://someremoteserver/locationendpoint">
-                </label>
-            </div>
-            
+
         </div>
         <div>
             <div class="buttons">
@@ -28,6 +34,10 @@
             </div>
         </div>
     </form>
+    <div>
+        <span>Status:</span>
+        <span id="status" name="status">Waiting...</span>
+    </div>
     <div>
         <iframe id="mapsIframe" width="100%" height="90%" style="border:0" loading="lazy" allowfullscreen
             src=""></iframe>
