@@ -6,6 +6,7 @@ if ("geolocation" in navigator) {
 let urlField = document.getElementById('serverUrl');
 let iframe = document.getElementById('mapsIframe');
 let apiKeyFld = document.getElementById('apiKey');
+let uniqueIdFld = document.getElementById('senderName');
 
 let geolocationHandlerID = 0;
 let cachedCoordinates = null;
@@ -41,19 +42,21 @@ const flattenObj = (inputObj) => {
 /**
  * push the GPS coordinates to the remote server
  * @param {string} urlEndpoint 
+ * @param {string} uniqueId
  * @param {GeolocationCoordinates} geoLocationCoords 
  */
-const pushData = async (urlEndpoint, geoLocationCoords) => {
+const pushData = async (urlEndpoint, uniqueId, geoLocationCoords) => {
     if (geoLocationCoords?.latitude && geoLocationCoords.longitude) {
-
-        const payload = flattenObj(geoLocationCoords);
-        const jsonPayload = JSON.stringify(payload);
+        
+        const formData = new FormData();
+        formData.append('name', uniqueId);
+        formData.append('coordinates', `${geoLocationCoords.latitude},${geoLocationCoords.longitude}`);
 
         const fetchOptions = {
-            body: jsonPayload,
+            body: formData,
             headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json, text/plain, */*'
+                'Content-Type': 'multipart/form-data',
+                'Access-Control-Allow-Origin': '*'
             },
             method: 'POST'
         };
@@ -83,14 +86,13 @@ const pushData = async (urlEndpoint, geoLocationCoords) => {
     }
 }
 
+
+
 /**
  * start collecting GPS data and publish it to the server
  */
 document.querySelector('#startBtn')
     .addEventListener("click", () => {
-
-        //get the latest service url: not likely but it may have changed
-        let serviceUrl = urlField.value;
 
         //request that the device notify us everytime the GPS coordinates change
         geolocationHandlerID = navigator.geolocation.watchPosition((position) => {
@@ -102,12 +104,12 @@ document.querySelector('#startBtn')
             //load the google map if coords have changed
 
             if ((cachedCoordinates?.latitude != position.coords.latitude || cachedCoordinates?.longitude != position.coords.longitude)
-                ||  (!iframe.src||'').toString().startsWith('https://www.google.com/maps/embed') == false) {
+                ||  (iframe.src||'').toString().startsWith('https://www.google.com/maps/embed') == false) {
                 iframe.src = getMapsSource(position.coords.latitude, position.coords.longitude, apiKeyFld.value);
             }
 
             //push data to server
-            pushData(serviceUrl, position.coords);
+            pushData(urlField.value, uniqueIdFld.value, position.coords);
 
         });
 
