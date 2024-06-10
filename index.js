@@ -7,6 +7,7 @@ let urlField = document.getElementById('serverUrl');
 let iframe = document.getElementById('mapsIframe');
 let apiKeyFld = document.getElementById('apiKey');
 let uniqueIdFld = document.getElementById('senderName');
+let statusSpan = document.getElementById('status');
 
 let geolocationHandlerID = 0;
 let cachedCoordinates = null;
@@ -47,17 +48,13 @@ const flattenObj = (inputObj) => {
  */
 const pushData = async (urlEndpoint, uniqueId, geoLocationCoords) => {
     if (geoLocationCoords?.latitude && geoLocationCoords.longitude) {
-        
+
         const formData = new FormData();
         formData.append('name', uniqueId);
         formData.append('coordinates', `${geoLocationCoords.latitude},${geoLocationCoords.longitude}`);
 
         const fetchOptions = {
             body: formData,
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Access-Control-Allow-Origin': '*'
-            },
             method: 'POST'
         };
 
@@ -94,6 +91,7 @@ const pushData = async (urlEndpoint, uniqueId, geoLocationCoords) => {
 document.querySelector('#startBtn')
     .addEventListener("click", () => {
 
+        statusSpan.innerHTML = 'Tracking Location...'
         //request that the device notify us everytime the GPS coordinates change
         geolocationHandlerID = navigator.geolocation.watchPosition((position) => {
 
@@ -104,7 +102,7 @@ document.querySelector('#startBtn')
             //load the google map if coords have changed
 
             if ((cachedCoordinates?.latitude != position.coords.latitude || cachedCoordinates?.longitude != position.coords.longitude)
-                ||  (iframe.src||'').toString().startsWith('https://www.google.com/maps/embed') == false) {
+                || (iframe.src || '').toString().startsWith('https://www.google.com/maps/embed') == false) {
                 iframe.src = getMapsSource(position.coords.latitude, position.coords.longitude, apiKeyFld.value);
             }
 
@@ -120,5 +118,11 @@ document.querySelector('#startBtn')
 document.querySelector('#stopBtn')
     .addEventListener('click', () => {
         navigator.geolocation.clearWatch(geolocationHandlerID);
+        statusSpan.innerHTML = "Stopped";
+        setTimeout(() => {
+            if (statusSpan?.innerHTML === "Stopped") {
+                statusSpan.innerHTML = "Waiting..."
+            }
+        }, 2000);
     });
 
