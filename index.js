@@ -5,7 +5,7 @@ if ("geolocation" in navigator) {
 }
 let urlField = document.getElementById('serverUrl');
 let iframe = document.getElementById('mapsIframe');
-let apiKeyFld = document.getElementById('apiKey');
+
 let uniqueIdFld = document.getElementById('senderName');
 let statusSpan = document.getElementById('status');
 
@@ -16,10 +16,9 @@ let cachedCoordinates = null;
  * 
  * @param {number} latitude 
  * @param {number} longitude 
- * @param {string} apiKey 
  * @returns 
  */
-const getMapsSource = (latitude, longitude, apiKey) => `https://www.google.com/maps/embed/v1/place?q=%20${latitude}%2C${longitude}&key=${apiKey}`;
+const getMapsSource = (latitude, longitude) => `https://www.google.com/maps/embed/v1/place?q=%20${latitude}%2C${longitude}&key=${GOOGLE_SHEETS_API_KEY}`;
 
 
 /**
@@ -49,9 +48,13 @@ const flattenObj = (inputObj) => {
 const pushData = async (urlEndpoint, uniqueId, geoLocationCoords) => {
     if (geoLocationCoords?.latitude && geoLocationCoords.longitude) {
 
+        const coordinateString = `${geoLocationCoords.latitude},${geoLocationCoords.longitude}`;
+        const coordinateStringEncoded = encodeURIComponent(coordinateString);
+
         const formData = new FormData();
         formData.append('name', uniqueId);
-        formData.append('coordinates', `${geoLocationCoords.latitude},${geoLocationCoords.longitude}`);
+        formData.append('coordinates', coordinateString);
+        formData.append('url', `${BASE_GOOGLE_MAPS_URL}/${coordinateStringEncoded}`)
 
         const fetchOptions = {
             body: formData,
@@ -103,7 +106,7 @@ document.querySelector('#startBtn')
 
             if ((cachedCoordinates?.latitude != position.coords.latitude || cachedCoordinates?.longitude != position.coords.longitude)
                 || (iframe.src || '').toString().startsWith('https://www.google.com/maps/embed') == false) {
-                iframe.src = getMapsSource(position.coords.latitude, position.coords.longitude, apiKeyFld.value);
+                iframe.src = getMapsSource(position.coords.latitude, position.coords.longitude);
             }
 
             //push data to server
