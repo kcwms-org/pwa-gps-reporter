@@ -33,6 +33,16 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Create constant.js
+        env:
+          API_KEY: ${{ secrets.GOOGLE_SHEETS_API_KEY }}
+        run: |
+          rm constants.js 2>/dev/null 
+          touch constants.js
+          echo "const BASE_GOOGLE_MAPS_URL = 'https://www.google.com/maps/place'" >> constants.js
+          echo "const GOOGLE_SHEETS_API_KEY = '$API_KEY';" >> constants.js
+          cat constants.js
+        shell: bash
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
