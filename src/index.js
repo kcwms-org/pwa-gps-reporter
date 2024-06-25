@@ -10,6 +10,9 @@ let uniqueIdFld = document.getElementById('senderName');
 let statusSpan = document.getElementById('status');
 
 let geolocationHandlerID = 0;
+/**
+ * @typedef {GeolocationCoordinates} cachedCoordinates
+ */
 let cachedCoordinates = null;
 
 /**
@@ -86,7 +89,33 @@ const pushData = async (urlEndpoint, uniqueId, geoLocationCoords) => {
     }
 }
 
+/**
+ * 
+ * @param {GeolocationCoordinates} geoLocationCoords 
+ * @param {number} minimumDistance
+ * @returns {true|false}
+ */
+const shouldPushData = (geoLocationCoords, minimumDistance) => {
+    let hasLocationChanged = true;
 
+    // if we have not loaded the maps into the frame yet, we need to load it
+    if ((iframe.src || '').toString().startsWith('https://www.google.com/maps/embed') == false) {
+        hasLocationChanged = true;
+    } else {
+        if (geoLocationCoords) {
+            hasLocationChanged =
+                (geoLocationCoords.latitude !== cachedCoordinates.latitude
+                    || geoLocationCoords.longitude !== cachedCoordinates.longitude);
+
+            if (hasLocationChanged) {
+                // is the distance changed >= minimumDistance
+                const distancedDiff = haversine_distance(cachedCoordinates, geoLocationCoords, "miles");
+                hasLocationChanged = distancedDiff >= minimumDistance;
+            }
+        }
+    }
+    return hasLocationChanged;
+}
 
 /**
  * start collecting GPS data and publish it to the server
@@ -104,8 +133,7 @@ document.querySelector('#startBtn')
 
             //load the google map if coords have changed
 
-            if ((cachedCoordinates?.latitude != position.coords.latitude || cachedCoordinates?.longitude != position.coords.longitude)
-                || (iframe.src || '').toString().startsWith('https://www.google.com/maps/embed') == false) {
+            if (shouldPushData(position.coords)) {
                 iframe.src = getMapsSource(position.coords.latitude, position.coords.longitude);
             }
 
