@@ -135,10 +135,10 @@ document.querySelector('#startBtn')
 
             if (shouldPushData(position.coords)) {
                 iframe.src = getMapsSource(position.coords.latitude, position.coords.longitude);
+                //push data to server
+                pushData(urlField.value, uniqueIdFld.value, position.coords);
             }
 
-            //push data to server
-            pushData(urlField.value, uniqueIdFld.value, position.coords);
 
         });
 
