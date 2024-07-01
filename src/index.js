@@ -97,6 +97,9 @@ const pushData = async (urlEndpoint, uniqueId, geoLocationCoords) => {
  */
 const shouldPushData = (geoLocationCoords, minimumDistance) => {
     let hasLocationChanged = true;
+    if (!minimumDistance) {
+        minimumDistance = .01; //.01 mile = about 50 feet
+    }
 
     // if we have not loaded the maps into the frame yet, we need to load it
     if ((iframe.src || '').toString().startsWith('https://www.google.com/maps/embed') == false) {
