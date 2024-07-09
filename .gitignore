@@ -1,7 +1,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode
 
 src/constants.js
-
+node_modules/
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
