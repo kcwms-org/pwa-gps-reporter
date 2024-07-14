@@ -1,7 +1,9 @@
+const GOOGLE_MAPS_BASE_URL = 'https://www.google.com/maps/embed';
+
 if ("geolocation" in navigator) {
     console.info('geolocation found');
 } else {
-    console.info('geolocation is not found')
+    console.info('geolocation is not found');
 }
 let urlField = document.getElementById('serverUrl');
 let iframe = document.getElementById('mapsIframe');
@@ -21,7 +23,7 @@ let cachedCoordinates = null;
  * @param {number} longitude 
  * @returns 
  */
-const getMapsSource = (latitude, longitude) => `https://www.google.com/maps/embed/v1/place?q=%20${latitude}%2C${longitude}&key=${GOOGLE_SHEETS_API_KEY}`;
+const getMapsSource = (latitude, longitude) => `${GOOGLE_MAPS_BASE_URL}/v1/place?q=%20${latitude}%2C${longitude}&key=${GOOGLE_SHEETS_API_KEY}`;
 
 
 /**
@@ -102,7 +104,7 @@ const shouldPushData = (geoLocationCoords, minimumDistance) => {
     }
 
     // if we have not loaded the maps into the frame yet, we need to load it
-    if ((iframe.src || '').toString().startsWith('https://www.google.com/maps/embed') == false) {
+    if ((iframe.src || '').toString().startsWith(GOOGLE_MAPS_BASE_URL) == false) {
         hasLocationChanged = true;
     } else {
         if (geoLocationCoords) {
@@ -131,16 +133,17 @@ document.querySelector('#startBtn')
         geolocationHandlerID = navigator.geolocation.watchPosition((position) => {
 
             //log the data so for debugging purposes
-            cachedCoordinates = position.coords;
             console.info('received position.coords', position);
-
+            
             //load the google map if coords have changed
-
+            
             if (shouldPushData(position.coords)) {
                 iframe.src = getMapsSource(position.coords.latitude, position.coords.longitude);
                 //push data to server
                 pushData(urlField.value, uniqueIdFld.value, position.coords);
             }
+            
+            cachedCoordinates = position.coords;
 
 
         });
