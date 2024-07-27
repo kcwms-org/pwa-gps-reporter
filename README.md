@@ -1,5 +1,20 @@
 # McaseyGpsTracker
 
+## How to do things
+
+### create a new component and its service
+replace NewComponent/new-component with your component name
+
+```sh
+$ ng g c ./components/NewComponent --style "scss" 
+```
+
+```sh
+$ ng g s ./components/new-component/NewComponent
+```
+
+
+## Information
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.1.
 
 ## Development server
