@@ -1,7 +1,6 @@
 import { Component, Inject, inject, Input } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-
-const GOOGLE_MAPS_BASE_URL = 'https://www.google.com/maps/embed';
+import { MapsWrapperService } from './maps-wrapper.service';
 
 @Component({
   selector: 'app-maps-wrapper',
@@ -14,7 +13,6 @@ export class MapsWrapperComponent {
   /**
    * the google sheets api key. this should be injected   * 
    */
-  private _googleSheetsApiKey: string = 'AIzaSyDBK2pxTLYSxtcu-P29JLtOmTcKJfCBKIo';
   private _lattitude: number = 0;
   private _longitude: number = 0;
 
@@ -22,16 +20,16 @@ export class MapsWrapperComponent {
    * get the url to google maps passing in the longitute and lattitude as querystring parameters
    */
   public get mapSource(): SafeResourceUrl | null {
-    let safeUrl : SafeResourceUrl | null = null;
-    const url = this.getMapsSource(this._lattitude, this._longitude);
-    if (this.isValidUrl(url))
+    let safeUrl: SafeResourceUrl | null = null;
+    
+    const url = this.logic.getMapsSource(this._lattitude, this._longitude);
+    if (url)
       safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+
     return safeUrl;
   }
-  /**
-   *
-   */
-  constructor(private sanitizer: DomSanitizer) {
+
+  constructor(private sanitizer: DomSanitizer, private logic: MapsWrapperService) {
 
   }
 
@@ -41,7 +39,7 @@ export class MapsWrapperComponent {
    */
   @Input()
   public set mapParameters(params: { longitude: number, lattitude: number }) {
-    if (params?.lattitude && params.longitude) {
+    if (params?.lattitude && params?.longitude) {
       this._lattitude = params.lattitude;
       this._longitude = params.longitude;
     }
@@ -49,16 +47,6 @@ export class MapsWrapperComponent {
       console.error('expected { longitutde: number, lattitude: number } got ', params);
     }
   }
-
-  /**
-   * get the url to the 
-   * @param latitude the lattitude
-   * @param longitude the longitude
-   * @returns 
-   */
-  protected getMapsSource = (latitude: number, longitude: number) => `${GOOGLE_MAPS_BASE_URL}/v1/place?q=%20${this._lattitude}%2C${this._longitude}&key=${this._googleSheetsApiKey}`;
-
-  protected isValidUrl = (input: string) => (input) ? true : false;
 
 }
 
