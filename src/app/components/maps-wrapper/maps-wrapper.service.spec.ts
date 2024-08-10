@@ -16,12 +16,15 @@ describe('MapsWrapperService', () => {
 
   //getMapsSource should pass
   it('getMapsSource() should return an empty string when one input is 0', () => {
-    
+    const expected: string = '';
+
     const badLattitude = 0;
     const badLongitude = Math.random() * (1 - 10000) + 1;
 
     console.info(`badLattitude=${badLattitude}, badLongitude=${badLongitude}`);
-    expect(service.getMapsSource(badLattitude, badLongitude)).toBe('');
+    const actual:string = service.getMapsSource(badLattitude, badLongitude);
+    
+    expect(actual).toEqual(expected);
   })
 
   it('getMapsSource() should return url when both inputs are not 0', () => {
@@ -57,6 +60,7 @@ describe('MapsWrapperService', () => {
     const url: string = 'fake.com';
     expect(service.isValidUrl(url)).toBeFalse();
   })
+
   it('isValidUrl() should fail for empty string', () => {
     const url: string = '';
     expect(service.isValidUrl(url)).toBeFalse();
