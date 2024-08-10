@@ -1,27 +1,49 @@
-# McaseyGpsTracker
+# Monique's GPS TRACKER & REPORTER
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.1.
+## Notes about this [Angular 18]() project
 
-## Development server
+- [package.json](https://nodesource.com/blog/the-basics-of-package-json/)
+  - the project configuration file used by node based projects.
+  - To start the website, you will need to open a terminal and run the following command
+  
+    ```shell
+    npm run start
+    ```
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- vscode-extensions.log
+    - From the root of the project, run the following to install the recommneded VSCode extensions.
 
-## Code scaffolding
+        ```shell
+        cat vscode-extensions.log | xargs -n 1 code --install-extension 
+        ```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+    - From the root of the project, run the following to update the list of recommended VSCode extension with your current extensions.    
 
-## Build
+        ```shell
+        code --list-extensions > vscode-extensions.log
+        ```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- .vscode/[settings.json](https://code.visualstudio.com/docs/getstarted/settings)
+  - some recommended settings for VSCode editor specifically. You typically want these in your user settings file at ~/.config/Code/User/settings.json.
 
-## Running unit tests
+- .vscode/[launch.json](https://code.visualstudio.com/docs/editor/debugging)
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+    - VSCode does not support debugging with browser's installed via [snaps](https://snapcraft.io/) or [flatpak](https://flathub.org/), without serious user intervention. Since the firefox [deb package actually installs via snaps](https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04), our only choice is to install the chrome [deb package](https://www.google.com/chrome/browser-tools/)
 
-## Running end-to-end tests
+        1. uninstall chrome **flatpak**
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+            - 
+                ```shell
+                flatpak uninstall com.google.Chrome
+                ```
 
-## Further help
+        2. install chrome using deb package
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+            - download from https://www.google.com/chrome/browser-tools/
+            - find the file you just downloaded and right click 
+            - select Open With >> Discover
+            - inside of Discover press the "Install" button
+
+    - [.gitignore](https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files)
+
+        this file tells git to ignore certain files
