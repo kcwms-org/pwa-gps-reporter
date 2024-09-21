@@ -15,7 +15,7 @@ export class MapsWrapperComponent {
    * the google sheets api key. this should be injected   * 
    */
   private _googleSheetsApiKey: string = 'AIzaSyDBK2pxTLYSxtcu-P29JLtOmTcKJfCBKIo';
-  private _lattitude: number = 0;
+  private _lattitude: number = 1;
   private _longitude: number = 0;
 
   /**
